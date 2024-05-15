@@ -11,4 +11,11 @@ router.get('/google/redirect', passport.authenticate('google'), (_req: Request, 
     res.send(200)
 );
 
+router.post('/google', (req: Request, res: Response) => {
+    const accessToken = req.body.accessToken;
+    console.log('Received access token:', accessToken);
+
+    res.send('Access token received by the backend');
+});
+
 export default router;
