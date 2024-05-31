@@ -1,27 +1,30 @@
 import express from 'express';
-import passport from 'passport';
-import session from 'express-session';
-import bodyParser from 'body-parser';
+import helmet from 'helmet';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 import authRoutes from './routes/auth.js';
 import { PORT } from './config/config.js';
-import './passport/google.js';
+import path from 'path';
 
 async function server() {
     const app = express();
 
-    // Configure session middleware
-    app.use(session({
-        secret: 'your-secret-key',
-        resave: false,
-        saveUninitialized: false,
-    }));
+    // Middlewares
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+    
+    app.use(helmet());
+    app.use(cors())
+    app.use(cookieParser())
 
-    app.use(passport.initialize());// Middlewares
-    app.use(passport.session());
-    app.use(bodyParser.json());
+    // app.use(bodyParser.json());
 
-    app.use('/api/auth', authRoutes);// Routes
+    // Setting up Views
+    app.set('view engine', 'ejs');
+    app.set('views', path.join(__dirname, 'views'));
+
+    app.use('/', authRoutes);// Routes
 
     try {
 
@@ -30,7 +33,7 @@ async function server() {
     } catch (err) {
 
         console.log(err);
-        
+
     }
 }
 
