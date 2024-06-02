@@ -5,12 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
     <title>Comment Youtube OAuth2</title>
 </head>
 
 <body>
-    <h1>Login with Google</h1>
-    <a href="<%= authUrl %>">Login</a>
+    <header class="container">
+        <h1>Login with Google</h1>
+        <small>Post CommentThreads on Youtube</small>
+    </header>
+    <main class="container">
+        <form>
+            <a href="<%= authUrl %>" type="button">Login</a>
+        </form>
+    </main>
+    <footer class="container"></footer>
 </body>
-
 </html>

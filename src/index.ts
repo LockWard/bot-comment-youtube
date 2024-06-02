@@ -2,10 +2,10 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 
 import authRoutes from './routes/auth.js';
 import { PORT } from './config/config.js';
-import path from 'path';
 
 async function server() {
     const app = express();

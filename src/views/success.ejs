@@ -4,14 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
     <title>Success</title>
 </head>
 
 <body>
-    <h1>
-        <%= message %>
-    </h1>
-    <a href="/comment">View Comments</a> | <a href="/logout">Logout</a>
+    <header class="container">
+        <h1>Success</h1>
+        <small><%= message %></small>
+    </header>
+    <main class="container">
+        <form>
+            <a href="/comment" type="button">Post Comments</a>
+            <a href="/logout" type="button" class="secondary">Logout</a>
+        </form>
+    </main>
+    <footer class="container"></footer>
 </body>
 
 </html>

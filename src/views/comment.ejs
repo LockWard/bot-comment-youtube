@@ -4,19 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
     <title>Insert Comment</title>
 </head>
 
 <body>
-    <h1>Insert a Comment</h1>
-    <form action="/comment" method="POST">
-        <label for="videoId">Video ID:</label>
-        <input type="text" id="videoId" name="videoId" required><br>
-        <label for="text">Comment Text:</label>
-        <textarea id="text" name="text" required></textarea><br>
-        <button type="submit">Submit Comment</button>
-    </form>
-    <a href="/comment">View Comments</a> | <a href="/logout">Logout</a>
+    <header class="container">
+        <h1>Insert a Comment</h1>
+    </header>
+    <main class="container">
+        <form action="/comment" method="POST">
+            <div id="comments">
+                <div class="comment">
+                    <label for="videoId">Video ID OR URL:</label>
+                    <input type="text" id="videoId" name="videoId" required><br>
+                    <label for="text">Comment Text:</label>
+                    <textarea id="text" name="text" required></textarea><br>
+                </div>
+            </div>
+            <!-- <button type="button" onclick="addComment()">Add Another Comment</button><br><br> -->
+            <button type="submit">Submit Comments</button>
+        </form>
+        <a href="/logout" type="button">Log Out</a>
+    </main>
+    <footer class="container"></footer>
 </body>
 
 </html>
