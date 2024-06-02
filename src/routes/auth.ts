@@ -16,6 +16,10 @@ const oauth2Client = new google.auth.OAuth2(
     GOOGLE_REDIRECT_URL
 );
 
+router.get('/', (_req: Request, res: Response) => {
+    res.redirect('login');
+});
+
 router.get('/login', (_req: Request, res: Response) => {
 
     const authUrl = oauth2Client.generateAuthUrl({
@@ -39,7 +43,7 @@ router.get('/redirect', async (req: Request, res: Response) => {
             // The user did not give us permission.
             return res.redirect('/');
         } else {
-            
+
             const { tokens } = await oauth2Client.getToken(code);
 
             // Store tokens securely
@@ -60,13 +64,29 @@ router.get('/comment', (_req: Request, res: Response) => {
     res.render('comment');
 });
 
+// function youtube_parser(url: string) {
+
+// let regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+// let match = url.match(regExp);
+
+// if (match && match[2].length == 11) {
+//     return match[2];
+// } else {
+//     throw error;
+// }
+// }
+
 router.post('/comment', async (req: Request, res: Response) => {
-    
+
     const { videoId, text } = req.body;
 
     if (!videoId || !text) {
         return res.status(400).send('videoId and text are required');
     }
+
+    // Ensure videoId and text are arrays
+    // const videoIds = Array.isArray(videoId) ? videoId : [videoId];
+    // const texts = Array.isArray(text) ? text : [text];
 
     try {
         const youtube = google.youtube({
@@ -74,11 +94,16 @@ router.post('/comment', async (req: Request, res: Response) => {
             auth: oauth2Client,
         });
 
+        const url = videoId.split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
+        const urlParser = (url[2] !== undefined) ? url[2].split(/[^0-9a-z_\-]/i)[0] : url[0];
+
+        // const urlParser = youtube_parser(videoId);
+
         await youtube.commentThreads.insert({
             part: ['snippet'],
             requestBody: {
                 snippet: {
-                    videoId: videoId,
+                    videoId: urlParser,
                     topLevelComment: {
                         snippet: {
                             textOriginal: text,
@@ -88,14 +113,31 @@ router.post('/comment', async (req: Request, res: Response) => {
             },
         });
 
-        // return res.render('comment', response.data);
+        // await Promise.all(videoIds.map((id, index) => {
+        //     return youtube.commentThreads.insert({
+        //         part: ['snippet'],
+        //         requestBody: {
+        //             snippet: {
+        //                 videoId: id,
+        //                 topLevelComment: {
+        //                     snippet: {
+        //                         textOriginal: texts[index],
+        //                     },
+        //                 },
+        //             },
+        //         },
+        //     });
+        // }));
+
         return res.render('success', { message: 'Comment inserted successfully!' });
+        // return res.redirect('/comment');
+
 
     } catch (error) {
 
         console.error('Error inserting comment:', error);
-        return res.status(500).render('error', { message: 'Error inserting comment.' });
-        
+        return res.status(500).render('error', { message: 'Error inserting comment. ' + error });
+
     }
 });
 
@@ -110,23 +152,9 @@ router.get('/logout', (_req: Request, res: Response) => {
         }
 
         oauth2Client.setCredentials({});
-        return res.render('success', { message: 'Logout successful!' });
+        return res.redirect('/login');
 
     });
 });
-
-// router.get('/*', (_req, _res, next: NextFunction) => {
-//     setTimeout(() => {
-//         try {
-
-//             throw new Error('BROKEN');
-
-//         } catch (err) {
-
-//             next(err);
-
-//         }
-//     }, 100);
-// });
 
 export default router;
