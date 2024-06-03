@@ -30,6 +30,7 @@ router.get('/login', (_req: Request, res: Response) => {
     });
 
     return res.render("index", { authUrl: authUrl });
+    // return res.json({authUrl});
 
 });
 
@@ -50,12 +51,15 @@ router.get('/redirect', async (req: Request, res: Response) => {
             oauth2Client.setCredentials(tokens);
 
             return res.render('success', { message: 'Authentication successful!' });
+            // return res.redirect('/success');
 
         }
     } catch (error) {
 
         console.error('Error authenticating:', error);
         return res.status(500).render('error', { message: 'Error authenticating.' });
+        // return res.status(500).redirect('/error');
+
 
     }
 });
@@ -131,12 +135,13 @@ router.post('/comment', async (req: Request, res: Response) => {
 
         return res.render('success', { message: 'Comment inserted successfully!' });
         // return res.redirect('/comment');
-
+        // return res.send('Comment inserted successfully!');
 
     } catch (error) {
 
         console.error('Error inserting comment:', error);
         return res.status(500).render('error', { message: 'Error inserting comment. ' + error });
+        // return res.status(500).send('Error inserting comments.');
 
     }
 });
@@ -148,6 +153,7 @@ router.get('/logout', (_req: Request, res: Response) => {
 
             console.error('Error logging out:', err);
             return res.render('error', { message: 'Error logging out.' });
+            // return res.status(500).send('Error logging out.');
 
         }
 
