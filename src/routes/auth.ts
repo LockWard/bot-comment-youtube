@@ -60,7 +60,6 @@ router.get('/redirect', async (req: Request, res: Response) => {
         return res.status(500).render('error', { message: 'Error authenticating.' });
         // return res.status(500).redirect('/error');
 
-
     }
 });
 
@@ -68,17 +67,25 @@ router.get('/comment', (_req: Request, res: Response) => {
     res.render('comment');
 });
 
-// function youtube_parser(url: string) {
+// Define a type for YouTube URL objects
+type YouTubeUrl = {
+    url: string;
+    videoId: string | null;
+};
 
-// let regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-// let match = url.match(regExp);
+// Function to parse YouTube URLs
+function parseYouTubeUrls(urls: string[]): YouTubeUrl[] {
+    // Regular expression to match YouTube video IDs
+    const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
 
-// if (match && match[2].length == 11) {
-//     return match[2];
-// } else {
-//     throw error;
-// }
-// }
+    return urls.map(url => {
+        const match = url.match(youtubeRegex);
+        return {
+            url,
+            videoId: match ? match[1] : null
+        };
+    });
+}
 
 router.post('/comment', async (req: Request, res: Response) => {
 
@@ -89,8 +96,8 @@ router.post('/comment', async (req: Request, res: Response) => {
     }
 
     // Ensure videoId and text are arrays
-    // const videoIds = Array.isArray(videoId) ? videoId : [videoId];
-    // const texts = Array.isArray(text) ? text : [text];
+    const videoIds = Array.isArray(videoId) ? videoId : [videoId];
+    const texts = Array.isArray(text) ? text : [text];
 
     try {
         const youtube = google.youtube({
@@ -98,43 +105,27 @@ router.post('/comment', async (req: Request, res: Response) => {
             auth: oauth2Client,
         });
 
-        const url = videoId.split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
-        const urlParser = (url[2] !== undefined) ? url[2].split(/[^0-9a-z_\-]/i)[0] : url[0];
+        const parsedUrls = parseYouTubeUrls(videoIds);
 
-        // const urlParser = youtube_parser(videoId);
+        const extractParsedUrl = parsedUrls.map(video => video.videoId);
 
-        await youtube.commentThreads.insert({
-            part: ['snippet'],
-            requestBody: {
-                snippet: {
-                    videoId: urlParser,
-                    topLevelComment: {
-                        snippet: {
-                            textOriginal: text,
+        await Promise.all(extractParsedUrl.map((id, index) => {
+            return youtube.commentThreads.insert({
+                part: ['snippet'],
+                requestBody: {
+                    snippet: {
+                        videoId: id,
+                        topLevelComment: {
+                            snippet: {
+                                textOriginal: texts[index],
+                            },
                         },
                     },
                 },
-            },
-        });
-
-        // await Promise.all(videoIds.map((id, index) => {
-        //     return youtube.commentThreads.insert({
-        //         part: ['snippet'],
-        //         requestBody: {
-        //             snippet: {
-        //                 videoId: id,
-        //                 topLevelComment: {
-        //                     snippet: {
-        //                         textOriginal: texts[index],
-        //                     },
-        //                 },
-        //             },
-        //         },
-        //     });
-        // }));
+            });
+        }));
 
         return res.render('success', { message: 'Comment inserted successfully!' });
-        // return res.redirect('/comment');
         // return res.send('Comment inserted successfully!');
 
     } catch (error) {

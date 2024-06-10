@@ -13,8 +13,12 @@ async function server() {
     // Middlewares
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
-
-    app.use(helmet());
+    app.use(
+        helmet({
+            contentSecurityPolicy: false,
+            xDownloadOptions: false,
+        }),
+    );
     app.use(cors());
     app.use(cookieParser());
 
@@ -24,7 +28,8 @@ async function server() {
     app.set('view engine', 'ejs');
     app.set('views', path.join(__dirname, 'views'));
 
-    app.use('/', authRoutes);// Routes
+    // Routes
+    app.use('/', authRoutes);
 
     try {
 

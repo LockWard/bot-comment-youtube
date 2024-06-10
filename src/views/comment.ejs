@@ -24,11 +24,26 @@
                     <textarea id="text" name="text" required></textarea><br>
                 </div>
             </div>
+            <button type="button" class="secondary" id="addCommentButton">Add Another Comment</button><br><br>
             <button type="submit">Submit Comments</button>
         </form>
         <a href="/logout" type="button">Log Out</a>
     </main>
     <footer class="container"></footer>
+    <script>
+        document.getElementById('addCommentButton').addEventListener('click', function () {
+            const commentsDiv = document.getElementById('comments');
+            const newCommentDiv = document.createElement('div');
+            newCommentDiv.className = 'comment';
+            newCommentDiv.innerHTML = `
+        <label for="videoId">Video ID OR URL:</label>
+        <input type="text" name="videoId" required><br>
+        <label for="text">Comment Text:</label>
+        <textarea name="text" required></textarea><br>
+    `;
+            commentsDiv.appendChild(newCommentDiv);
+        });
+    </script>
 </body>
 
 </html>
