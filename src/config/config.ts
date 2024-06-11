@@ -15,9 +15,9 @@ export const GOOGLE_REDIRECT_URL = process.env.GOOGLE_REDIRECT_URL;
 export const redirect_URIS = [`${baseURL}/auth/redirect`];
 
 export const SCOPES = [
-    // 'email',
-    // 'profile',
+    'email',
+    'profile',
     // 'https://www.googleapis.com/auth/youtube',
     'https://www.googleapis.com/auth/youtube.force-ssl',
-    'https://www.googleapis.com/auth/youtube.readonly',
+    // 'https://www.googleapis.com/auth/youtube.readonly',
 ];
